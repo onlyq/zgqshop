@@ -90,7 +90,9 @@ class Permissioncate extends Common
     	}
     	$rbac = new Rbac();
     	$getarr=$rbac->getPermissionCategory([['name', '=', $data['name']]]);
+        unset($data['__token__']);
     	if (empty($getarr)) {
+
     		Db::table('permission_category')->update($data);
     		$arr=['code'=>'1','status'=>'ok','data'=>'修改成功'];
     		echo json_encode($arr);	

@@ -1,20 +1,22 @@
 {include file="header"}
 <section class="Hui-article-box">
-	<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 管理员管理 <span class="c-gray en">&gt;</span> 权限管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+	<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 管理员管理 <span class="c-gray en">&gt;</span> 角色管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 		
 	<div class="Hui-article">
 		<article class="cl pd-20">
-			<div>
+			<a href="{:url('role/add')}">
+			<button type="button" class="btn btn-success" id="add" name="" onClick=""><i class="Hui-iconfont">&#xe600;</i>添加</button></a>
+			<!-- <div>
 				<input id="__token__" type="hidden" name="__token__" value="{$Request.token}" />
 				<input type="text" placeholder="名称" value="" class="input-text" style="width:120px" id="name">
 				<input type="text" placeholder="描述" value="" class="input-text" style="width:120px" id="description">
-				<input type="text" placeholder="路径" value="" class="input-text" style="width:200px" id="path">
+				<input type="text" placeholder="路径" value="" class="input-text" style="width:120px" id="path">
 				<select name="" id="category_id">
 					<option value="">分类</option>
 				</select>
 				<button type="button" class="btn btn-success" id="add" name="" onClick=""><i class="Hui-iconfont">&#xe600;</i> 添加</button>
 				<span id="add_span"></span>
-			</div>
+			</div> -->
 			<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a></span> <span class="r">共有数据：<strong>54</strong> 条</span> </div>
 			<div class="mt-10">
 				<table class="table table-border table-bordered table-bg table-sort">
@@ -24,8 +26,6 @@
 							<th width="70">ID</th>
 							<th width="120">权限名称</th>
 							<th width="120">权限描述</th>
-							<th width="200">权限路径</th>
-							<th width="120">权限分类</th>
 							<th width="100">操作</th>
 						</tr>
 					</thead>
@@ -43,17 +43,24 @@
 				<a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
 			</div>
 			<div class="modal-body">
-				 <input type="text" value="" id="up_id" hidden="">
-				 <input type="text" value="" id="up_name">
-				 <input type="text" value="" id="up_description">
-				 <input type="text" value="" id="up_path">
-				 <select name="" id="up_category_id">
-					<option value="">分类</option>
-				</select>
-				 <span id="up_span"></span>
+				<div class="row cl">
+					<input type="text" value="" id="up_id" hidden="">
+					<input type="text" value="" id="up_name">
+					<input type="text" value="" id="up_description">
+					<input type="hidden" id="__token__" value="{$Request.token}" hidden="" />
+					<span id="up_span"></span>
+				</div>
+				<br>
+				 <div class="row cl">
+					<!-- <label class="form-label">网站角色：</label> -->
+					<div class="formControls">
+					<dl class="permission-list" id='permission-list'>
+				</dl>
+			</div>
+		</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn btn-primary" onclick="up_action()">确定</button>
+				<button class="btn btn-primary" onclick="up_action()">修改</button>
 				<button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
 			</div>
 		</div>
@@ -68,26 +75,27 @@
 		var id=$("#up_id").val()
 		var name=$("#up_name").val()
 	 	var description=$("#up_description").val()
-	 	var path=$("#up_path").val()
-	 	var category_id=$("#up_category_id").val()
 	 	var __token__=$("#__token__").val()
+	 	var mycheckbox=$('.mycheckbox:checked')
+	 	var permission_id=''
+	 	for (var i = 0; i < mycheckbox.length; i++) {
+			permission_id=permission_id+','+mycheckbox[i].value
+		}
 		$.ajax({
-			url:"{:url('permission/updateAction')}",
+			url:'{:url("role/updateaction")}',
 			type:'post',
-			// dataType:'json',
 			data:{
 				id:id,
 				name:name,
 				description:description,
-				path:path,
-				category_id:category_id,
+				permission_id:permission_id,
 				__token__:__token__,
 			},
-			// dataType:'json',
 			success:function(res){
 				console.log(res)
 				getToken()
 				if (res.status=='ok') {
+					$("#up_span").html()
 					$("#modal-demo").modal("hide") 
 					show()
 				}
@@ -97,38 +105,42 @@
 			}
 		})
 	}
-	function modaldemo(id,name,description,path,category_id){	
+	function modaldemo(id,name,description){
+		// var mycheckbox=$(".mycheckbox")
+	 		
+	 
+
 		$("#up_id").val(id)
 		$("#up_name").val(name)
 	 	$("#up_description").val(description)
-	 	$("#up_path").val(path)
-	 	$("#up_category_id").val(category_id)
+	 	$.ajax({
+	 		url:"{:url('role/mypermissionShow')}",
+	 		data:{
+	 			id:id,
+	 		},
+	 		success:function (res){
+	 			$(".mycheckbox").prop('checked',false);
+
+	 			console.log(res.data)
+	 			$.each(res.data , function(key,value){
+	 				console.log(value)
+	 				var p_id="p"+value.permission_id
+	 				$("#"+p_id).prop('checked',true)
+	 			})
+
+	 		}
+	 		
+	 	})
 	 	$("#modal-demo").modal("show")
 	 }
-	
-	function getCate(){
-		$.ajax({
-			url:'{:url("permissioncate/show")}',
-			dataType:'json',
-			success:function(res){
-				var option=''
-				for (var i = 0; i < res.length; i++) {
-					option=option+"<option value='"+res[i]['id']+"'>"+res[i]['name']+"</option>";
-				}
-				$('#category_id').html(option)
-				$('#up_category_id').html(option)
-			}
-		})
-	}
-	getCate()
 	function show(){
 		$.ajax({
-			url:'{:url("permission/show")}',
+			url:'{:url("role/show")}',
 			success:function(res){
 				var data=res.data
 				var tr=''
 				for (var i = 0; i < data.length; i++) {
-					tr=tr+"<tr><td><input type='checkbox'</td><td>"+data[i]['id']+"</td><td>"+data[i]['name']+"</td><td>"+data[i]['description']+"</td><td>"+data[i]['path']+"</td><td>"+data[i]['p_c_name']+"</td><td class='f-14 product-brand-manage'><a style='text-decoration:none' onclick='modaldemo(\""+data[i]['id']+"\",\""+data[i]['name']+"\",\""+data[i]['description']+"\",\""+data[i]['path']+"\",\""+data[i]['category_id']+"\")' title='编辑'><i class='Hui-iconfont'>&#xe6df;</i></a> <a style='text-decoration:none' class='delete_one ml-5' value='"+data[i]['id']+"' title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>"
+					tr=tr+"<tr><td><input type='checkbox'</td><td>"+data[i]['id']+"</td><td>"+data[i]['name']+"</td><td>"+data[i]['description']+"</td><td class='f-14 product-brand-manage'><a style='text-decoration:none' onclick='modaldemo(\""+data[i]['id']+"\",\""+data[i]['name']+"\",\""+data[i]['description']+"\")' title='编辑'>详情</a> <a style='text-decoration:none' class='delete_one ml-5' value='"+data[i]['id']+"' title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>"
 					
 				}
 				$('.table tbody').html(tr)
@@ -165,7 +177,7 @@
  			var id=($(this).attr('value'))
  			var __token__=$('#__token__').val()
  			$.ajax({
-				url:'{:url("permission/delete")}',
+				url:'{:url("role/delete")}',
 				type:'post',
 				data:{
 					__token__:__token__,
@@ -181,4 +193,20 @@
 			})
  		})
  	});
+ 	$.ajax({
+			url:"{:url('role/permissionShow')}",
+			success:function(res){
+				var data=res.data
+				dl=''
+				$.each(data, function( key, value ){
+					dl=dl+"<dt><label class='' style='color:blue'><input type='checkbox' value=''>"+key+"</label><dt><dd><dl class='cl permission-list2'>"
+					$.each(value, function( key, value ){
+						dl=dl+"<label class=''><input type='checkbox' class='mycheckbox' id='p"+value['id']+"'' value='"+value['id']+"'>"+value['name']+"</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+					})
+					dl=dl+"</dd>";
+				});
+				// console.log(dl)
+				$('#permission-list').html(dl)
+			}
+		})
 </script>

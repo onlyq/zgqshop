@@ -72,15 +72,15 @@
          	dataType:'json',
          	success:function(res){
          		console.log(res)
+         		getToken()
                 if (res.status=='ok') {
-                	$('#up_span').html()
-         			    $("#model-demo").modal("hide")
+         			    $("#modal-demo").modal("hide")
          		    	show()
          		}
      		    if (res.status=='error') {
      			    $('#up_span').html(res.data)             			
          		}
-         		$("#__token__").val('{$Request.token}')
+
          	}
          })
      }
