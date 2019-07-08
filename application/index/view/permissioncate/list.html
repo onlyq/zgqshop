@@ -106,6 +106,7 @@
 	  })
 	}
 	show()
+	
 	function mydelete(id){
 		var __token__=$('#token_delete').html()
 		// console.log(__token__)
@@ -130,6 +131,7 @@
 		if (r==true){
 		var box=$(".mycheckbox:checked")
 		var id=''
+		var __token__=$('#__token__').val()
 		for (var i = 0; i < box.length; i++) {
 			
 			id=id+','+box[i].value
@@ -138,7 +140,8 @@
 			  	url:"{:url('permissioncate/deleteMore')}",
 			  	type:'post',
 			  	data:{
-			  		id:id
+			  		id:id,
+			  		__token__:__token__,
 			  	},
 			  	dataType:'json',
 			  	success:function(res){
@@ -148,15 +151,6 @@
 				}
 			})
 		}
-	}
-	function getToken(){
-		$.ajax({
-			url:"{:url('common/commonToken')}",
-			dataType:'json',
-			success:function(res){
-				$('#__token__').val(res.token)
-			}
-		})
 	}
 	$(document).ready(function(){
 		$(document).on("click",".upname",function(){

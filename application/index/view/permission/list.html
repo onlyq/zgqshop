@@ -15,7 +15,9 @@
 				<button type="button" class="btn btn-success" id="add" name="" onClick=""><i class="Hui-iconfont">&#xe600;</i> 添加</button>
 				<span id="add_span"></span>
 			</div>
-			<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a></span> <span class="r">共有数据：<strong>54</strong> 条</span> </div>
+			<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a></span> 
+				<span id='token_delete' hidden="">{$token}</span>
+				<span class="r">共有数据：<strong>54</strong> 条</span> </div>
 			<div class="mt-10">
 				<table class="table table-border table-bordered table-bg table-sort">
 					<thead>
@@ -121,6 +123,80 @@
 		})
 	}
 	getCate()
+	// function detetel(){
+	// 	var r=confirm("确定删除吗");
+	// 	if (r==true) {
+	// 	var box=$(".mycheckbox:checked")
+	// 	var id=''
+	// 	var __token__=$('#__token__').val()
+	// 	for (var i = 0; i < box.length; i++) {
+	// 		id=id+','+box[i].value
+	// 	}
+	// 	$.ajax({
+	// 		url:'{:url("permission/deleteMore")}',
+	// 		type:'post',
+	// 		data:{
+	// 			id:id,
+	// 			__token__:__token__,
+	// 		},
+	// 		success:function(res){
+	// 			if (res.status=='ok') {
+	// 				show()
+	// 			}
+	// 			}
+	// 		})
+	// 	}
+	// }
+	function datadel(){
+		var r=confirm("确定删除吗？");
+		var __token__ = $("#__token__").val()
+		if (r==true){
+			var box = $(".mycheckbox:checked")
+			var id = ''
+			for (var i = 0; i < box.length; i++) {
+				id = id+","+ box[i].value
+			}
+			$.ajax({
+				url:"{:url('permission/datadel')}",
+				data:{
+					id:id,
+					__token__:__token__,
+				},
+				dataType:'json',
+				type:'post',
+				success:function(res){
+					show()
+					getToken()
+				}
+			})
+		}
+	}
+	// function datadel(){
+	// 	var r=confirm("确定删除吗");
+	// 	if (r==true){
+	// 	var box=$(".mycheckbox:checked")
+	// 	var id=''
+	// 	var __token__=$('#__token__').val()
+	// 	for (var i = 0; i < box.length; i++) {
+			
+	// 		id=id+','+box[i].value
+	// 	}
+	// 	$.ajax({
+	// 		  	url:"{:url('permissioncate/deleteMore')}",
+	// 		  	type:'post',
+	// 		  	data:{
+	// 		  		id:id,
+	// 		  		__token__:__token__,
+	// 		  	},
+	// 		  	dataType:'json',
+	// 		  	success:function(res){
+	// 		  	if (res.status=='ok') {
+	// 				show()
+	//   			}
+	// 			}
+	// 		})
+	// 	}
+	// }
 	function show(){
 		$.ajax({
 			url:'{:url("permission/show")}',
@@ -128,7 +204,7 @@
 				var data=res.data
 				var tr=''
 				for (var i = 0; i < data.length; i++) {
-					tr=tr+"<tr><td><input type='checkbox'</td><td>"+data[i]['id']+"</td><td>"+data[i]['name']+"</td><td>"+data[i]['description']+"</td><td>"+data[i]['path']+"</td><td>"+data[i]['p_c_name']+"</td><td class='f-14 product-brand-manage'><a style='text-decoration:none' onclick='modaldemo(\""+data[i]['id']+"\",\""+data[i]['name']+"\",\""+data[i]['description']+"\",\""+data[i]['path']+"\",\""+data[i]['category_id']+"\")' title='编辑'><i class='Hui-iconfont'>&#xe6df;</i></a> <a style='text-decoration:none' class='delete_one ml-5' value='"+data[i]['id']+"' title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>"
+					tr=tr+"<tr><td><input class='mycheckbox' type='checkbox' value='"+data[i]['id']+"'></td><td>"+data[i]['id']+"</td><td>"+data[i]['name']+"</td><td>"+data[i]['description']+"</td><td>"+data[i]['path']+"</td><td>"+data[i]['p_c_name']+"</td><td class='f-14 product-brand-manage'><a style='text-decoration:none' onclick='modaldemo(\""+data[i]['id']+"\",\""+data[i]['name']+"\",\""+data[i]['description']+"\",\""+data[i]['path']+"\",\""+data[i]['category_id']+"\")' title='编辑'><i class='Hui-iconfont'>&#xe6df;</i></a> <a style='text-decoration:none' class='delete_one ml-5' value='"+data[i]['id']+"' title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>"
 					
 				}
 				$('.table tbody').html(tr)

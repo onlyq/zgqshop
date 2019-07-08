@@ -63,21 +63,31 @@ class Permissioncate extends Common
     	$arr=['code'=>'0','status'=>'ok','data'=>'删除成功','token'=>$token];
     	echo json_encode($arr);
     }
-     public function deleteMore()
+     public function datadel()
     {
-    	$id=Request::post('id');
-    	if (empty($id)) {
-    		$arr=['code'=>'0','status'=>'error','data'=>'不能为空'];
-    		echo json_encode($arr);
-    		die;
-    	}
-
-    	$arr=explode(',', $id);
-    	array_shift($arr);
-    	$rbac = new Rbac();
-      	$rbac->delPermissionCategory($arr);
-    	$arr=['code'=>'0','status'=>'ok','data'=>'删除成功'];
-    	echo json_encode($arr);
+        $data= Request::post();
+        $id = $data['id'];
+        $rbac = new Rbac();
+        $validate = new \app\index\validate\Delete;
+        if (!$validate->check($data)) {  
+            $arr = ['code'=>'1','status'=>'error','data'=>$validate->getError()];
+            echo $json = json_encode($arr);
+            die;
+        }
+        if (empty($id)) {
+            $arr = ['code'=>'1','status'=>'error','data'=>'未选择任何对象'];
+            $json = json_encode($arr);
+            echo $json;
+            die;
+        }else{
+            $rbac = new Rbac();
+            $id=explode(',', $id);
+            array_shift($id);
+            $rbac->delPermission($id);
+            $arr=['code'=>'0','staus'=>'ok', 'data'=>'删除成功'];
+            $json = json_encode($arr);
+            echo $json;die;
+        }
     }
     public function updateAction()
     {

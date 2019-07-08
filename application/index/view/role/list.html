@@ -17,14 +17,16 @@
 				<button type="button" class="btn btn-success" id="add" name="" onClick=""><i class="Hui-iconfont">&#xe600;</i> 添加</button>
 				<span id="add_span"></span>
 			</div> -->
-			<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a></span> <span class="r">共有数据：<strong>54</strong> 条</span> </div>
+			<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a></span>
+				
+				<span class="r">共有数据：<strong>54</strong> 条</span> </div>
 			<div class="mt-10">
 				<table class="table table-border table-bordered table-bg table-sort">
 					<thead>
 						<tr class="text-c">
 							<th width="25"><input type="checkbox" name="" value=""></th>
 							<th width="70">ID</th>
-							<th width="120">权限名称</th>
+							<th width="120">角色名称</th>
 							<th width="120">权限描述</th>
 							<th width="100">操作</th>
 						</tr>
@@ -107,9 +109,6 @@
 	}
 	function modaldemo(id,name,description){
 		// var mycheckbox=$(".mycheckbox")
-	 		
-	 
-
 		$("#up_id").val(id)
 		$("#up_name").val(name)
 	 	$("#up_description").val(description)
@@ -140,7 +139,7 @@
 				var data=res.data
 				var tr=''
 				for (var i = 0; i < data.length; i++) {
-					tr=tr+"<tr><td><input type='checkbox'</td><td>"+data[i]['id']+"</td><td>"+data[i]['name']+"</td><td>"+data[i]['description']+"</td><td class='f-14 product-brand-manage'><a style='text-decoration:none' onclick='modaldemo(\""+data[i]['id']+"\",\""+data[i]['name']+"\",\""+data[i]['description']+"\")' title='编辑'>详情</a> <a style='text-decoration:none' class='delete_one ml-5' value='"+data[i]['id']+"' title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>"
+					tr=tr+"<tr><td><input type='checkbox' value='"+data[i]['id']+"'></td><td>"+data[i]['id']+"</td><td>"+data[i]['name']+"</td><td>"+data[i]['description']+"</td><td class='f-14 product-brand-manage'><a style='text-decoration:none' onclick='modaldemo(\""+data[i]['id']+"\",\""+data[i]['name']+"\",\""+data[i]['description']+"\")' title='编辑'>详情</a> <a style='text-decoration:none' class='delete_one ml-5' value='"+data[i]['id']+"' title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>"
 					
 				}
 				$('.table tbody').html(tr)
@@ -148,6 +147,31 @@
 		})
 	}
 	show()
+	function datadel(){
+		var r=confirm("确定删除吗?");
+		if (r==true) {
+		var box = $(".mycheckbox:checked")
+		var id=''
+		var __token__=$("__token__").val()
+		for (var i = 0; i < box.length; i++) {
+			id = id+","+box[i].value
+		}
+		$.ajax({
+			url:'{:url("role/datale")}',
+			type:'post',
+			data:{
+				id:id,
+				__token__:__token__,
+			},
+			dataType:'json',
+			success:function(res){
+
+				show()
+				getToken()
+			}
+		})
+	}
+}
  	$(document).ready(function(){
  		$('#add').click(function(){
  			var __token__=$('#__token__').val()
@@ -194,19 +218,19 @@
  		})
  	});
  	$.ajax({
-			url:"{:url('role/permissionShow')}",
-			success:function(res){
-				var data=res.data
-				dl=''
-				$.each(data, function( key, value ){
-					dl=dl+"<dt><label class='' style='color:blue'><input type='checkbox' value=''>"+key+"</label><dt><dd><dl class='cl permission-list2'>"
-					$.each(value, function( key, value ){
-						dl=dl+"<label class=''><input type='checkbox' class='mycheckbox' id='p"+value['id']+"'' value='"+value['id']+"'>"+value['name']+"</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-					})
-					dl=dl+"</dd>";
-				});
-				// console.log(dl)
-				$('#permission-list').html(dl)
-			}
-		})
+		url:"{:url('role/permissionShow')}",
+		success:function(res){
+			var data=res.data
+			dl=''
+			$.each(data, function( key, value ){
+				dl=dl+"<dt><label class='' style='color:blue'><input type='checkbox' value=''>"+key+"</label><dt><dd><dl class='cl permission-list2'>"
+				$.each(value, function( key, value ){
+					dl=dl+"<label class=''><input type='checkbox' class='mycheckbox' id='p"+value['id']+"'' value='"+value['id']+"'>"+value['name']+"</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+				})
+				dl=dl+"</dd>";
+			});
+			// console.log(dl)
+			$('#permission-list').html(dl)
+		}
+	})
 </script>

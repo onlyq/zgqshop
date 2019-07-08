@@ -3,6 +3,7 @@ namespace app\index\controller;
 use gmars\rbac\Rbac;
 use Request;
 use Db;
+use Session;
 class Role extends Common
 {
     public function list()
@@ -18,10 +19,16 @@ class Role extends Common
         $json=['code'=>'0','status'=>'ok','data'=>$arr];
         return json($json);
     }
+    public function show1()
+    {
+         $rbac= new Rbac();
+         $arr=Db::query("select id,name,description from role");
+          echo  json_encode($arr);
+    }
     public function permissionShow()
     {
         $rbac= new Rbac();
-        $arr=Db::query("select p.id,p.name,p.description,p.path,p_c.name as p_c_name,p.category_id from permission as p join permission_category as p_c on p.category_id=p_c.id");   
+        $arr=Db::query("select p.id,p.name,p.description,p.path,p_c.name as p_c_name,p.category_id from permission as p join permission_category as p_c on p.category_id=p_c.id");
         $newarr=[];
         foreach ($arr as $key => $value) {
            $newarr[$value['p_c_name']][]=$value;
@@ -108,7 +115,8 @@ class Role extends Common
         }
     }
      
-    public function delete(){
+    public function delete()
+    {
         $data=Request::post();
 
         $validate = new \app\index\validate\Delete;
@@ -120,5 +128,31 @@ class Role extends Common
         $rbac->delRole($data['id']);
         $json=['code'=>'0','status'=>'ok','data'=>'删除成功'];
         return json($json);
+    }
+     public function datale()
+    {
+        $data= Request::post();
+        $id = $data['id'];
+        $rbac = new Rbac();
+        $validate = new \app\index\validate\Delete;
+        if (!$validate->check($data)) {  
+            $arr = ['code'=>'1','status'=>'error','data'=>$validate->getError()];
+            echo $json = json_encode($arr);
+            die;
+        }
+        if (empty($id)) {
+            $arr = ['code'=>'1','status'=>'error','data'=>'未选择任何对象'];
+            $json = json_encode($arr);
+            echo $json;
+            die;
+        }else{
+            $rbac = new Rbac();
+            $id=explode(',', $id);
+            array_shift($id);
+            $rbac->delPermission($id);
+            $arr=['code'=>'0','staus'=>'ok', 'data'=>'删除成功'];
+            $json = json_encode($arr);
+            echo $json;
+        }
     }
 }

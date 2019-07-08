@@ -3,11 +3,15 @@ namespace app\index\controller;
 use gmars\rbac\Rbac;
 use Request;
 use Db;
+use Session;
 class Permission extends Common
 {
     public function list()
     { 
         //存一个串
+        $token=uniqid();
+        Session::set('token',$token);
+        $this->assign('token',$token);
       return $this->fetch();
     }
     public function show()
@@ -28,6 +32,7 @@ class Permission extends Common
         $rbac= new Rbac();
         $name=$data['name'];
         $path=$data['path'];
+
         $arr=Db::table("select * from permission where name='$name' or path='$path'");
         if (empty($arr)) {
             $arr=Db::table('permission')->update($data);
@@ -53,7 +58,6 @@ class Permission extends Common
             $arr=['code'=>'1','status'=>'error','data'=>$validate->getError()];
             return json($arr);
         }
-
         $rbac = new Rbac();
         $getname=$rbac->getPermission([['name', '=', $data['name']]]);
         $getpath=$rbac->getPermission([['path', '=', $data['path']]]);
@@ -73,17 +77,84 @@ class Permission extends Common
             return json($json);
         }
     }
-       function delete(){
+       function delete()
+       {
         $data=Request::post();
         $validate = new \app\index\validate\Delete;
         if (!$validate->check($data)) {
-            $arr=['code'=>'1','status'=>'error','data'=>$validate->getError()];
+            $arr=['code'=>'0','status'=>'error','data'=>$validate->getError()];
             return json($arr);
         }
         $rbac= new Rbac();
         $id=$data['id'];
         $rbac->delPermission([$id]);
-        $arr=['code'=>'1','status'=>'ok','data'=>'删除成功'];
-            return json($arr);      
+        $arr=['code'=>'0','status'=>'ok','data'=>'删除成功'];
+        return json($arr);      
     }
+    // public function deleteMore()
+    // {
+    //     $data=Request::post('id');
+    //     // var_dump($data);
+    //     // die;
+    //     $validate = new \app\index\validate\Delete;
+    //     if (!$validate->check($data)) {
+    //         $arr=['code'=>'1','status'=>'error','data'=>$validate->getError()];
+    //         echo json_encode($arr);
+    //         die;
+    //     }
+    //     if (empty($id)) {
+    //         $arr=['code'=>'0','status'=>'error','data'=>'未选择删除对象'];
+    //         echo json_encode($arr);
+    //         die;
+    //     }
+    //     $id=ltrim($id,',');
+    //     $arr=explode(',', $id);
+    //     $rbac = new Rbac();
+    //     $rbac->delPermissionCategory([$id]);
+    //     $arr=['code'=>'2','status'=>'ok','data'=>'删除成功','token'=>$token];
+    //     echo json_encode($arr);
+    // }
+    public function datadel()
+    {
+        $data= Request::post();
+        $id = $data['id'];
+        $rbac = new Rbac();
+        $validate = new \app\index\validate\Delete;
+        //1、使用验证器初步验证权限分类名称和描述是否符合要求
+        if (!$validate->check($data)) {  
+            $arr = ['code'=>'1','status'=>'error','data'=>$validate->getError()];
+            echo $json = json_encode($arr);
+            die;
+        }
+        if (empty($id)) {
+            $arr = ['code'=>'1','status'=>'error','data'=>'未选择任何对象'];
+            $json = json_encode($arr);
+            echo $json;
+            die;
+        }else{
+            $rbac = new Rbac();
+            $id=explode(',', $id);
+            array_shift($id);
+            $rbac->delPermission($id);
+            $arr=['code'=>'0','staus'=>'ok', 'data'=>'删除成功'];
+            $json = json_encode($arr);
+            echo $json;
+        }
+    }
+//     public function deleteMore()
+//     {
+//         $id=Request::post('id');
+//         if (empty($id)) {
+//             $arr=['code'=>'0','status'=>'error','data'=>'未选择删除对象'];
+//             echo json_encode($arr);
+//             die;
+//         }
+
+//         $arr=explode(',', $id);
+//         array_shift($arr);
+//         $rbac = new Rbac();
+//         $rbac->delPermission($arr);
+//         $arr=['code'=>'0','status'=>'ok','data'=>'删除成功'];
+//         echo json_encode($arr);
+//     }
 }
