@@ -15,8 +15,6 @@ class User extends Common
     { 
       return $this->fetch();
     }
-    // 删除方法
-
     public function show()
     {
      $rbac = new Rbac();
@@ -29,16 +27,14 @@ class User extends Common
     public function addAction()
     {
         $data=Request::post();
-        // $validate = new \app\index\validate\User;
-        // if (!$validate->check($data)) {
-        //     $arr=['code'=>'1','status'=>'error','data'=>$validate->getError()];
-        //     return json($arr);
-        // }
+        $validate = new \app\index\validate\User;
+        if (!$validate->check($data)) {
+            $arr=['code'=>'1','status'=>'error','data'=>$validate->getError()];
+            return json($arr);
+        }
         $rbac= new Rbac();
         $id=$data['id'];
-        // var_dump($id);die;
         $user_name=$data['user_name'];
-
         $password=md5($data['password']);
         $mobile=$data['mobile'];
         $role_id=$data['role_id'];
@@ -56,4 +52,45 @@ class User extends Common
                 return json($json);
             }
         }
-}
+        //删除方法
+    public function delete(){
+        $data=Request::post();
+        $validate = new \app\index\validate\Delete;
+        if (!$validate->check($data)) {
+            $data=['code'=>'1','status'=>'error','data'=>$validate->getError()];
+            echo $json=json_encode($data);
+            die;
+        }
+        $id=Request::post('id');
+        $arr=Db::table('user')->where('id',$id)->delete();
+        
+        $arr=Db::table('user_role')->where('user_id',$id)->delete();
+        $arr=['code'=>'0','status'=>'ok','data'=>'删除成功'];
+        echo json_encode($arr);
+        die;
+    }
+    public function datade2()
+        {
+          $data=Request::post();
+          $id=Request::post('id');
+ 
+         $validate = new \app\index\validate\Delete;
+            if (!$validate->check($data)) {
+          $data=['code'=>'1','status'=>'error', 'data'=>$validate->getError()];
+            echo $json=json_encode($data);
+            die;
+        }
+         if (empty($id)){
+            $arr=['code'=>1,'status'=>'error','data'=>'未选择删除对象'];
+            echo json_encode($arr);
+          }
+          $id=explode(",", $id);
+          array_shift($id);
+          $id=implode(',', $id);
+          $arr=Db::table('user')->where('id','in',$id)->delete();
+          $arr=Db::table('user_role')->where('id','in',$id)->delete();
+          $arr=['code'=>'0','status'=>'ok', 'data'=>'删除成功'];
+          echo json_encode($arr);
+          die;
+        }
+    }

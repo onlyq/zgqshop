@@ -66,7 +66,6 @@ class Role extends Common
             $arr=Db::table('role')->update($up_data);
             
             //删掉，重新入库
-          
             $arr=Db::query("delete from role_permission where role_id='$id'");
            
                 $pid_arr=explode(',', $permission_id);

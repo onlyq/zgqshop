@@ -4,6 +4,7 @@ use think\Controller;
 use think\captcha\Captcha;
 use Request;
 use Db;
+use md5;
 // use gmars\rbac\Rbac;
 use think\facade\Session;
 class Login extends Controller
@@ -45,5 +46,7 @@ class Login extends Controller
     // 	$captcha = new Captcha();
     //     return $captcha->entry();
     // }
-
+    public function md5(){
+      echo md5(12345);
+    }
 }

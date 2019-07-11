@@ -21,7 +21,8 @@ class Permission extends Common
         $json=['code'=>'0','status'=>'ok','data'=>$arr];
         return json($json);
     }
-    public function updateAction(){
+    public function updateAction()
+    {
         $data=Request::post();
         $validate = new \app\index\validate\Permission;
         if (!$validate->check($data)) {
