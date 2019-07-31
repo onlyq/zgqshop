@@ -1,0 +1,51 @@
+{include file="header"}
+<section class="Hui-article-box">
+	<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 产品管理 <span class="c-gray en">&gt;</span> 货品管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>	
+	<div class="Hui-article">
+		<article class="cl pd-20">	
+			<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a><a class="btn btn-primary radius" href="{:url('goodsp/add')}?g_id={$g_id}&c_id={$c_id}"><i class="Hui-iconfont">&#xe600;</i> 货品添加管理员</a></span>
+				<span class="r">共有数据：<strong>54</strong> 条</span> </div>
+			<div class="mt-10">
+				<table class="table table-border table-bordered table-bg table-sort">
+					<input type="text" name="" value="{$g_id}" id="goods_id">
+					<thead>
+						<tr class="text-c">
+							<th width="25"><input type="checkbox" name="" value=""></th>
+							<th width="70">ID</th>
+							<th width="120">商品详情</th>
+							<th width="200">商品单价</th>
+							<th width="200">库存</th>
+							<th width="100">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>
+		</article>
+	</div>
+</div>
+</section>
+{include file="footer"}
+<script>
+	function show(){
+		var goods_id=$('#goods_id').val()
+		$.ajax({
+			url:"{:url('goodsp/show')}",
+			
+			data:{
+				goods_id:goods_id,
+			},
+			dataType:'json',
+			success:function(res){
+				var data=res.data
+				var tr=''
+				for (var i = 0; i < data.length; i++) {
+					tr=tr+"<tr class-'text-c'><td><input name='id[]' type='checkbox' value='"+data[i].id+"'></td><td>"+data[i].id+"</td><td>"+data[i].attr_name+"</td><td>"+dat+"</td><td>"+data[i].number+"</td><td class='f-14 product-brand-manage'><a style='text-decoration:none' onclick='modaldemo(\""+data[i]['id']+"\",\""+data[i]['name']+"\",\""+data[i]['description']+"\",\""+data[i]['path']+"\",\""+data[i]['category_id']+"\")' title='编辑'><i class='Hui-iconfont'>&#xe6df;</i></a> <a style='text-decoration:none' class='delete_one ml-5' onclick='mydelete(\""+data[i]['id']+"\")' title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>"
+				}
+				$('table tbody').html(tr)
+			}
+		})
+	}
+	show()
+</script>

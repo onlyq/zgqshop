@@ -67,6 +67,32 @@
 		</div>
 	</div>
 </div>
+<div id="modal-demo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content radius">
+            <div class="modal-header">
+                <h3 class="modal-title">对话框标题</h3>
+                <a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
+            </div>
+            <div class="modal-body">
+                <input type="text" value="" id="up_id" hidden="">
+                登陆名：<input type="text" value="" id="up_user_name">
+                登陆密码：<input type="password" value="" id="up_password">          
+                手机号码：<input type="text" value="" id="up_mobile">
+           
+            <div class="modal-body">
+                <select name="" id="up_role_id">
+                    <option value="">角色</option>
+                 </select>
+                 <span id="up_span"></span>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="up_action()">确定</button>
+                <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 </section>
 
@@ -107,7 +133,7 @@
                 var data=res.data
                 var tr=''
                 for (var i = 0; i < data.length; i++) {
-                       tr=tr+"<tr><td><input type='checkbox'class='mycheckbox' value='"+data[i]['id']+"'><td>"+data[i]['id']+"</td><td>"+data[i]['user_name']+"</td><td>"+data[i]['password']+"</td><td>"+data[i]['mobile']+"</td><td>"+data[i]['name']+"</td><td>"+data[i]['create_time']+"</td><td class='f-14 product-brand-manage'><a style='text-decoration:none' onclick='modaldemo1(\""+data[i]['id']+"\",\""+data[i]['user_name']+"\",\""+data[i]['password']+"\",\""+data[i]['mobile']+"\",\""+data[i]['role_id']+"\")'  title='编辑'><i class='Hui-iconfont'>&#xe6df;</i></a> <a style='text-decoration:none' class='delete_one ml-5' onclick='delete(\""+data[i]['id']+"\")' title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>";
+                   tr=tr+"<tr><td><input type='checkbox'class='mycheckbox' value='"+data[i]['id']+"'><td>"+data[i]['id']+"</td><td>"+data[i]['user_name']+"</td><td>"+data[i]['password']+"</td><td>"+data[i]['mobile']+"</td><td>"+data[i]['name']+"</td><td>"+data[i]['create_time']+"</td><td class='f-14 product-brand-manage'><a style='text-decoration:none' onclick='modaldemo1(\""+data[i]['id']+"\",\""+data[i]['user_name']+"\",\""+data[i]['password']+"\",\""+data[i]['mobile']+"\",\""+data[i]['role_id']+"\")'  title='编辑'><i class='Hui-iconfont'>&#xe6df;</i></a> <a style='text-decoration:none' class='delete_one ml-5' onclick='delete(\""+data[i]['id']+"\")' title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>";
                 }
                 $('.table tbody').html(tr)
                 }  
@@ -149,14 +175,11 @@
                         $("#uname").css("close",'red')
                     }
 					getToken()
-					
 				}
 			})
  		})
 		function delete1(id){
         var __token__=$('#__token__').val()
-
-
         $.ajax({
             url:"{:url('user/delete')}",
             type:'post',
@@ -200,4 +223,36 @@
         })
     }
 });
+    function up_action(){
+        var __token__=$('#__token__').val();
+        var id=$('#up_id').val();
+        var user_name=$('#up_user_name').val();
+        var password=$('#up_password').val();
+        var mobile=$('#up_mobile').val();
+        var role_id=$('#up_role_id').val();
+        $.ajax({
+            url:"{:url('user/updelete')}",
+            type:'post',
+            data:{
+                id:id,
+                user_name:user_name,
+                password:password,
+                mobile:mobile,
+                role_id:role_id,
+                __token__:__token__,
+            },
+            sussess:function(res){
+                console.log(res)
+            }
+        })
+    }
+    function modaldemo1(up_id,up_user_name,up_password,up_mobile,up_role_id)
+{   
+    $("#up_id").val(up_id)
+    $("#up_user_name").val(up_user_name)
+    $("#up_password").val(up_password)
+    $("#up_mobile").val(up_mobile)
+    $("#up_role_id").val(up_role_id)
+    $("#modal-demo").modal("show")
+}
 </script>

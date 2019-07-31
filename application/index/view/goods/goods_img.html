@@ -1,0 +1,99 @@
+{include file="header"}
+<section class="Hui-article-box">
+	<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 管理员管理 <span class="c-gray en">&gt;</span> 权限管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+		
+	<div class="Hui-article">
+		<article class="cl pd-20">
+			<div>
+				<input id="__token__" type="hidden" name="__token__" value="{$Request.token}" />
+				<input type="file" id="file" multiple>
+				<!-- <a href="{:url('goods/add')}"> -->
+				<button type="button" class="btn btn-success" id="add"><i class="Hui-iconfont">&#xe600;</i> 添加</button>
+				<span id="add_span"></span>
+			</div>
+			<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a></span> 
+				<span class="r">共有数据：<strong>54</strong> 条</span> </div>
+			<div class="mt-10">
+				<table class="table table-border table-bordered table-bg table-sort">
+					<thead>
+						<tr class="text-c">
+							<th width="25"><input type="checkbox" name="" value=""></th>
+							<th width="70">ID</th>
+							<th width="120">img</th>
+							<th width="100">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>
+		</article>
+	</div>
+	<div id="modal-demo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content radius">
+			<div class="modal-header">
+				<h3 class="modal-title">对话框标题</h3>
+				<a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
+			</div>
+			<div class="modal-body">
+				 <input type="text" value="" id="up_id" hidden="">
+				 <input type="text" value="" id="up_name">
+				 <input type="text" value="" id="up_description">
+				 <input type="text" value="" id="up_path">
+				 <select name="" id="up_category_id">
+					<option value="">分类</option>
+				</select>
+				 <span id="up_span"></span>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-primary" onclick="up_action()">确定</button>
+				<button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+</section>
+
+{include file="footer"}
+<script>
+	function show(){
+		$.ajax({
+			url:"{:url('goods/goodsimgshow')}",
+			success:function(res){
+				var data=res.data
+				var tr=''
+				for (var i = 0; i < data.length; i++) {
+					tr=tr+"<tr><td><input type='checkbox'></td><td>"+data[i]['id']+"</td><td>"+data[i]['name']+"</td><td>"+data[i]['cate_name']+"</td><td>"+data[i]['brand_name']+"</td><td>"+data[i]['online_status']+"</td><td><a href='{:url('goods/goodsimg')}?id="+data[i]['id']+"''>商品图片</a></td><td class='f-14 product-brand-manage'><a style='text-decoration:none' onclick='modaldemo(\""+data[i]['id']+"\",\""+data[i]['name']+"\",\""+data[i]['description']+"\",\""+data[i]['path']+"\",\""+data[i]['category_id']+"\")' title='编辑'><i class='Hui-iconfont'>&#xe6df;</i></a> <a style='text-decoration:none' class='delete_one ml-5' value='"+data[i]['id']+"' title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>"
+				}
+				$('table tbody').html(tr)
+			}
+		})
+	}
+	show()
+	$(document).ready(function(){
+		$('#add').click(function(){
+			// var __token__=$('#__token__').val()
+			var file=$('#file')[0].files
+			console.log(file)
+			var formData = new FormData();
+			formData.append('brand_logo',files);
+			$.ajax({
+				url:"{:url('goodsimg/goodsimgadd')}",
+				type:'post',
+				data:formData,
+				contentType: false, // 注意这里应设为false
+		    	processData: false,
+		    	cache: false,
+				success:function(res){
+					console.log(res)
+					getToken()
+					if (res.status=='ok') {
+						show()
+					}
+				}
+			})
+		})
+	})
+</script>

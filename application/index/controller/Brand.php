@@ -24,7 +24,7 @@ class Brand extends Common
 		$describe=Request::post('describe');
 		$arr=Db::query("select * from brand where brand_name='$brand_name'");
 		if (!empty($arr)) {
-			$json=['code'=>'0','status'=>'ok','data'=>'名字不能重复'];
+			$json=['code'=>'0','status'=>'error','data'=>'名字不能重复'];
     			return json($json);
 		}
     	$brand_logo = request()->file('brand_logo');
@@ -38,11 +38,12 @@ class Brand extends Common
 		        // echo $info->getExtension();
 		        // 输出 20160820/42a79759f284b767dfcb2a0197904287.jpg
 		        $path=$info->getSaveName();
+		        //转换/为\
 		        $path=str_replace("\\", "/",$info->getSaveName());
 		        Db::query("insert into brand (`brand_name`,`describe`,`brand_logo`)value('$brand_name','$describe','$path')");
 		        $json=['code'=>'0','status'=>'ok','data'=>'添加成功'];
     			return json($json);
-		        var_dump($data);
+		        // var_dump($data);
 		    }else{
 		        // 上传失败获取错误信息
 		        echo $file->getError();
@@ -83,7 +84,10 @@ class Brand extends Common
     	$data=Request::post();
 
     	$id=Request::post('id');
+    	$brand_logo=Request::post('brand_logo'); 
+    	unlink("./uploads/".$brand_logo);
     	$arr=Db::table('brand')->where('id',$id)->delete();
+    	// Db::tabl("delete from brand where id='$id=id");
     	$json=['code'=>'0','status'=>'ok','data'=>'删除成功'];
     	return json($json);
     }
@@ -114,6 +118,29 @@ class Brand extends Common
     	$arr=Db::table('brand')->update($data);
             $json=['code'=>'0','status'=>'ok','data'=>'修改成功'];
             return json($json);
+    	}
+	}
+	public function update_img()
+	{
+		$id=Request::post('id');
+		$brand_logo=Request::post('brand_logo');
+		$new_logo = request()->file('new_logo');
+    	if ($new_logo) {
+    		//这里是表明路径
+    		$info = $new_logo->validate(['size'=>1024*1024,'ext'=>'jpg,png,gif'])->move( './uploads');
+		    if($info){
+		        $path=$info->getSaveName();
+		        $path=str_replace("\\", "/",$info->getSaveName());
+		        $where=['id'=>$id,'brand_logo'=>$path];
+		        unlink("./uploads/".$brand_logo);
+		        $mysqli=Db::table('brand')->where('id','=',$id)->update($where);
+		        $json=['code'=>'0','status'=>'ok','data'=>'修改成功'];
+    			return json($json);
+		    }else{
+		        echo $file->getError();
+		        $json=['code'=>'1','status'=>'error','data'=>$info->getSaveName()];
+    			return json($json);
+		    }
     	}
 	}
 }

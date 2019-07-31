@@ -1,0 +1,162 @@
+{include file="header"}
+<section class="Hui-article-box">
+	<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 管理员管理 <span class="c-gray en">&gt;</span> 权限管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+		
+	<div class="Hui-article">
+		<article class="cl pd-20">
+			<div>
+				<input id="__token__" type="hidden" name="__token__" value="{$Request.token}" />
+				<a href="{:url('goods/add')}">
+				<button type="button" class="btn btn-success"><i class="Hui-iconfont">&#xe600;</i> 添加</button></a>
+				<input type="text" name="name" id="name" class="input-text" style="width:250px" placeholder="输入管理员名称" id="" name="">
+				<button type="submit" class="btn btn-success" id="show" name=""><i class="Hui-iconfont">&#xe665;</i> 搜商品</button>
+				热搜：<span id="tops"></span>
+			</div>
+			<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a></span> 
+				<span class="r">共有数据：<strong>54</strong> 条</span> </div>
+			<div class="mt-10">
+				<table class="table table-border table-bordered table-bg table-sort">
+					<thead>
+						<tr class="text-c">
+							<th width="25"><input type="checkbox" name="" value=""></th>
+							<th width="70">ID</th>
+							<th width="120">商品名称</th>
+							<th width="120">商品分类</th>
+							<th width="200">商品品牌</th>
+							<th width="120">商品状态</th>
+							<th width="120">查看图片</th>
+							<th width="120">货品</th>
+							<th width="100">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>
+		</article>
+	</div>
+	<div id="modal-demo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content radius">
+			<div class="modal-header">
+				<h3 class="modal-title">对话框标题</h3>
+				<a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
+			</div>
+			<div class="modal-body">
+				 <input type="text" value="" id="up_id" hidden="">
+				 <input type="text" value="" id="up_name">
+				 <input type="text" value="" id="up_description">
+				 <input type="text" value="" id="up_path">
+				 <select name="" id="up_category_id">
+					<option value="">分类</option>
+				</select>
+				 <span id="up_span"></span>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-primary" onclick="up_action()">确定</button>
+				<button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+</section>
+{include file="footer"}
+<script>
+	$(document).ready(function() {
+        $("#show").click();
+    })
+	$('#show').click(function(){
+		var name=$("#name").val();
+		// alert(name);
+		$.ajax({
+			url:"{:url('goods/show')}",
+			data:{
+				name:name,
+			},
+			type:'post',
+			dataTyps:'json',
+			success:function(res){
+				var data=res.data
+				var top=res.top
+				var tr=''
+				var av=''
+				for (var i = 0; i < data.length; i++) {
+					tr=tr+"<tr><td><input type='checkbox'></td><td>"+data[i]['id']+"</td><td>"+data[i]['name']+"</td><td>"+data[i]['cate_name']+"</td><td>"+data[i]['brand_name']+"</td><td><a href='{:url('goodsattr/list')}?id="+data[i]['id']+"''>商品属性</a></td><td><a href='{:url('goodsimg/goodsimgshow')}?id="+data[i]['id']+"''>商品图片</a></td><td><a href='{:url('goodsp/list')}?id="+data[i]['id']+"''>货品</a></td><td class='f-14 product-brand-manage'><a style='text-decoration:none' onclick='modaldemo(\""+data[i]['id']+"\",\""+data[i]['name']+"\",\""+data[i]['description']+"\",\""+data[i]['path']+"\",\""+data[i]['category_id']+"\")' title='编辑'><i class='Hui-iconfont'>&#xe6df;</i></a> <a style='text-decoration:none' class='delete_one ml-5' onclick='mydelete(\""+data[i]['id']+"\")' title='删除'><i class='Hui-iconfont'>&#xe6e2;</i></a></td></tr>"
+				}
+				for (var a = 0; a < top.length; a++) {
+					av=av+"<a>"+top[a]+"</a>&nbsp&nbsp&nbsp&nbsp&nbsp"
+				}
+				$("#tops").html(av)
+				$('table tbody').html(tr)
+				// var av=''
+				// $.each(res.sort,function(key,value){
+				// 	av=av+value
+				// })
+				// console.log(av)
+				
+			}
+		})
+	})
+	// show()
+	function mydelete(id){
+
+		$.ajax({
+			url:"{:url('goods/detele')}",
+			type:'post',
+			data:{
+				id:id,
+			},
+			success:function(res){
+				console.log(res)
+
+			}
+		}) 
+	}
+
+ 	// $(document).ready(function(){
+ 	// 	$('#add').click(function(){
+ 	// 		var __token__=$('#__token__').val()
+ 	// 		var name=$('#name').val()
+ 	// 		var description=$('#description').val()
+ 	// 		var path=$('#path').val()
+ 	// 		var category_id=$('#category_id').val()
+ 	// 		$.ajax({
+		// 		url:'{:url("permission/addaction")}',
+		// 		type:'post',
+		// 		data:{
+		// 			__token__:__token__,
+		// 			name:name,
+		// 			description:description,
+		// 			path:path,
+		// 			category_id:category_id,
+		// 		},
+		// 		success:function(res){
+		// 			getToken()
+		// 			if (res.status=='ok') {
+		// 				show()
+		// 			}
+		// 		}
+		// 	})
+ 	// 	})
+ 	// 	$(document).on("click",".delete_one",function(){
+ 	// 		var id=($(this).attr('value'))
+ 	// 		var __token__=$('#__token__').val()
+ 	// 		$.ajax({
+		// 		url:'{:url("permission/delete")}',
+		// 		type:'post',
+		// 		data:{
+		// 			__token__:__token__,
+		// 			id:id,
+		// 		},
+		// 		success:function(res){
+		// 			console.log(res)
+		// 			getToken()
+		// 			if (res.status=='ok') {
+		// 				show()
+		// 			}
+		// 		}
+		// 	})
+ 	// 	})
+ 	// });
+</script>

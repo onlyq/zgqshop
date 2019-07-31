@@ -2,10 +2,19 @@
 namespace app\index\controller;
 use think\Controller;
 use think\facade\Session;
+use Redis;
 class Common extends Controller
 {
 	public function __construct()
 	{
+		// $redis = new Redis();
+		// $redis->connect('127.0.0.1',6379);
+		// // var_dump($redis);die;
+		// $redis->incr('key');
+		// $redis->set('numbers',1);
+		// $numbers=$redis->get('numbers');
+		// var_dump($numbers);die;
+
 		parent::__construct();
 		$name=Session::get('name');
 		if (empty($name)) {
@@ -22,4 +31,5 @@ class Common extends Controller
         // $this->assign('token', $token);
         // return $this->fetch();
     }
+
 }

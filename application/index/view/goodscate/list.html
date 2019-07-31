@@ -1,0 +1,163 @@
+{include file="header"}
+<section class="Hui-article-box">
+	<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 产品管理 <span class="c-gray en">&gt;</span> 分类管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+		
+	<div class="Hui-article">
+		<article class="cl pd-20">
+			<div>
+				<input id="__token__" type="hidden" name="__token__" value="{$Request.token}" />
+				添加：
+				<span id="pid" value='0'>一级分类</span>的产品
+				<input type="text" placeholder="品牌名称" value="" class="input-text" style="width:120px" id="name">
+				
+				<button type="button" class="btn btn-success" id="add" name="" onClick=""><i class="Hui-iconfont">&#xe600;</i> 添加</button>
+			</div>
+			<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a></span> <span class="r">共有数据：<strong>54</strong> 条</span> </div>
+		
+			<div class="mt-10" id="mytree">
+				<ul style='list-style-type: block;'>
+					<!-- <li>aaa</li> -->
+				</ul>
+			</div>
+		</article>
+		</div>
+		<div id="modal-demo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		    <div class="modal-dialog">
+		        <div class="modal-content radius">
+		            <div class="modal-header">
+		                <h3 class="modal-title">对话框标题</h3>
+		                <a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
+		            </div>
+		            <div class="modal-body">
+		                <input type="text" value="" id="up_id" hidden="">
+		                <input type="text" value="" id="up_name">        
+		            <div class="modal-footer">
+		                <button class="btn btn-primary" onclick="updele()">确定</button>
+		                <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+		            </div>
+		        </div>
+		    </div>
+		</div>
+	</div>
+</section>
+{include file="footer"}
+<script>
+	function show(){
+	$.ajax({
+	    	url:"{:url('goodscate/show')}",
+	    	success:function(res) {
+	    		$('#mytree').html(res)
+	    		$('ul ul').css('display','none')
+	    	}
+		}) 	
+	}
+	show()
+	$(document).on('click','li',function(){
+		pid_html=$(this).html()
+		pid=$(this).attr('value')
+		$('#pid').html(pid_html)
+		$('#pid').attr('value',pid)
+		//调用方法 隐藏是点击展示 展示时点击隐藏
+		var bool=$(this).next().css('display')
+		console.log(bool)
+			if (bool=='none') {
+				$(this).next().css('display','block')
+			}
+			if (bool=='block') {
+				$(this).next().css('display','none')
+			}
+	})
+$(document).ready(function(){
+	//登录验证
+	 $("#add").click(function(){
+	    var name=$("#name").val()
+	    var pid=$("#pid").attr('value')
+	   	var __token__=$("#__token__").val()
+	   	// console.log(brand_name);
+	   	// console.log(describe);
+	    $.ajax({
+	    	url:"{:url('goodscate/addAction')}",
+	    	type:'post',
+	    	data:{
+	    		name:name,
+	    		pid:pid,
+	    		__token__:__token__,
+	    	},
+	    	success:function(res) {
+	    		getToken()
+	    		if (res.status=='ok') {
+	    			alert(res.data)
+	    			show()
+	    			$('id'+pid).next().append('<li>'+name+'</li>');
+	    		}
+	    	}
+	    })
+	})	
+});
+// function del(id){
+// 	$.ajax({
+// 		url:"{:url('goodscate/del')}",
+// 		type:'post',
+// 		data:{
+// 			id:id,
+// 		},
+// 		dataType:'json',
+// 		success:function(res){
+// 			if (res.status=='ok') {
+// 				show()
+// 				alert('删除成功')
+// 			}else{
+// 				alert('删除失败')
+// 			}
+
+// 		}
+// 	})
+// }
+function del(id)
+{
+	$.ajax({
+		url:"{:url('goodscate/del')}",
+		type:'post',
+		data:{
+			id:id,
+		},
+		dataType:'json',
+		success:function(res){
+			console.log(res)
+			if (res.status=='ok') {
+				show()
+				alert('删除成功')
+			}else{
+				alert('删除失败')
+			}
+		}
+	})
+}
+function modaldemo(up_id,up_name)
+{
+	console.log(id)
+	console.log(name)
+	$("#up_id").val(up_id)
+	$("#up_name").val(up_name)
+    $("#modal-demo").modal("show")
+}
+function updele()
+{
+	var id=$("#up_id").val();
+	var name=$("#up_name").val();
+	$.ajax({
+		url:"{:url('goodscate/updelete')}",
+		type:'post',
+		data:{
+			id:id,
+			name:name,
+		},
+		dataType:'json',
+		success:function(res){
+			console.log(res)
+			show()
+			
+		}
+	})
+}
+</script>

@@ -51,9 +51,10 @@ class User extends Common
                 $json=['code'=>'1','status'=>'error','data'=>'角色名字不能重复'];
                 return json($json);
             }
-        }
+    }
         //删除方法
-    public function delete(){
+    public function delete()
+    {
         $data=Request::post();
         $validate = new \app\index\validate\Delete;
         if (!$validate->check($data)) {
@@ -79,7 +80,7 @@ class User extends Common
           $data=['code'=>'1','status'=>'error', 'data'=>$validate->getError()];
             echo $json=json_encode($data);
             die;
-        }
+          }
          if (empty($id)){
             $arr=['code'=>1,'status'=>'error','data'=>'未选择删除对象'];
             echo json_encode($arr);
@@ -93,4 +94,35 @@ class User extends Common
           echo json_encode($arr);
           die;
         }
-    }
+        public function updelete()
+        {
+          $data=Request::post();
+          // $validate = new \app\index\validate\;
+          // if (!$validate->check($data)) {
+          //     $arr=['code'=>'1','status'=>'error','data'=>$validate->getError()];
+          //     return json($arr);
+          // }
+          $id=$data['id'];
+          $user_name=$data['user_name'];
+          $password=$data['password'];
+          $mobile=$data['mobile'];
+          $role_id=$data['role_id'];
+          unset($data['__token__']);
+          $arr=Db::query("select * from user where user_name='$user_name'");
+          if (empty($arr)) {
+            $arr=Db::table('user')->update($data);
+            $json=['code'=>'0','status'=>'ok','data'=>'修改成功'];
+            return json($json);
+            }else{
+            foreach ($arr as $key => $value) {
+               if ($value['id']!=$data['id']) {
+                    $json=['code'=>'2','status'=>'error','data'=>'name已经存在'];
+                    return json($json);
+                }
+            }
+            $arr=Db::table('user')->update($data);
+            $json=['code'=>'0','status'=>'ok','data'=>'修改成功'];
+            return json($json);
+          }
+        }
+  }
